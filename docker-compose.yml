@@ -1,0 +1,81 @@
+services:
+  api-gateway:
+    build: docker/php_api-gateway
+    container_name: ms-api-gateway
+    restart: unless-stopped
+    working_dir: /var/www/api-gateway
+    volumes:
+      - ./api-gateway:/var/www/api-gateway
+      - ./docker/php_api-gateway/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    ports:
+      - "8000:8000"
+    networks:
+      - microservice-network
+    depends_on:
+      - rabbitmq
+
+  user-service:
+    build: docker/php_user-service
+    container_name: ms-user-service
+    restart: unless-stopped
+    working_dir: /var/www/user-service
+    volumes:
+      - ./user-service:/var/www/user-service
+      - ./docker/php_user-service/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    ports:
+      - "8001:8000"
+    networks:
+      - microservice-network
+    depends_on:
+      - rabbitmq
+
+  order-service:
+    build: docker/php_order-service
+    container_name: ms-order-service
+    restart: unless-stopped
+    working_dir: /var/www/order-service
+    volumes:
+      - ./order-service:/var/www/order-service
+      - ./docker/php_order-service/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    ports:
+      - "8002:8000"
+    networks:
+      - microservice-network
+    depends_on:
+      - rabbitmq
+
+  nginx:
+    build: docker/nginx
+    container_name: ms-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./api-gateway:/var/www/api-gateway
+      - ./api-gateway/public:/var/www/api-gateway/public:ro
+    depends_on:
+      - api-gateway
+      - user-service
+      - order-service
+    networks:
+      - microservice-network
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: ms-rabbitmq
+    hostname: rabbitmq_host
+    restart: always
+    ports:
+      - "5672:5672" # AMQP порт
+      - "15672:15672" # Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=microservice
+      - RABBITMQ_DEFAULT_PASS=microservice
+    volumes:
+      - ./docker/rabbitmq/data:/var/lib/rabbitmq
+    networks:
+      - microservice-network
+
+networks:
+  microservice-network:
+    driver: bridge
