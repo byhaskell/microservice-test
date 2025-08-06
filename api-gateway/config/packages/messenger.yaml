@@ -5,28 +5,28 @@ framework:
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
-            order_rpc:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-                options:
-                    exchange:
-                        name: order_exchange
-                        type: topic
-                    queues:
-                        order_create_rpc: ~
-
-            order_response:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-                options:
-                    exchange:
-                        name: order_response_exchange
-                        type: fanout
-                    queues:
-                        order_response_queue: ~
+#            order_rpc:
+#                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+#                options:
+#                    exchange:
+#                        name: order_exchange
+#                        type: topic
+#                    queues:
+#                        order_create_rpc: ~
+#
+#            order_response:
+#                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+#                options:
+#                    exchange:
+#                        name: order_response_exchange
+#                        type: fanout
+#                    queues:
+#                        order_response_queue: ~
             # failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
 
         routing:
             # повідомлення йдуть через RabbitMQ до order service
-            App\Message\CreateOrder: order_rpc
-            App\Message\OrderResponse: order_response
+#            App\Message\CreateOrder: order_rpc
+#            App\Message\OrderResponse: order_response
 

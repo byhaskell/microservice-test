@@ -7,12 +7,11 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "symfony/amqp-messenger": "7.3.*",
+        "php-amqplib/php-amqplib": "^3.7.3",
         "symfony/console": "7.3.*",
         "symfony/dotenv": "7.3.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.3.*",
-        "symfony/messenger": "7.3.*",
         "symfony/runtime": "7.3.*",
         "symfony/yaml": "7.3.*"
     },

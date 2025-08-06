@@ -2,8 +2,7 @@
 
 namespace App\Controller;
 
-use App\Message\CreateOrder;
-use App\Service\OrderRpcClient;
+use App\Rpc\OrderRpcClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,19 +11,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 final class OrderController extends AbstractController
 {
     #[Route('/orders', name: 'api_orders', methods: ['POST', 'OPTIONS'])]
-    public function index(Request $request, OrderRpcClient $orderRpcClient)
+    public function orders(Request $request, OrderRpcClient $orderRpcClient)
     {
         $data = $request->getPayload()->all();
 
-        $queueId = uniqid();
+        $response = $orderRpcClient->call($data);
 
-        $message = new CreateOrder(
-            $data,
-            queueId: $queueId
-        );
-
-        $response = $orderRpcClient->send($message);
-
-        return new JsonResponse($response);
+        return new JsonResponse($response, isset($response['errors']) ? 400 : 200);
     }
 }
